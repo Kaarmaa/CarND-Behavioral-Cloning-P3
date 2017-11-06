@@ -137,3 +137,7 @@ I finally randomly shuffled the data set and put 20% of the data into a validati
 I used this training data for training the model. The validation set helped determine if the model was over or under fitting. The ideal number of epochs was around 3 as evidenced by the plateau of the training accuracy and loss over time.
 
 I used an adam optimizer so that manually training the learning rate wasn't necessary.
+
+### Additional Changes
+
+- There is still additional work I am doing for personal interest on getter the vehicle to navigate the more advanced track. This is taking place off of the master development branch and will continue into the future as my knowledge continues to grow!
