@@ -19,7 +19,7 @@ The goals / steps of this project are the following:
 [//]: # (Image References)
 
 [image1]: ./examples/Center_Basic.jpg "Basic Track - Center"
-[image2]: ./examples/Center_Advanced.png "Advanced Track - Center"
+[image2]: ./examples/Center_Advanced.jpg "Advanced Track - Center"
 [image3]: ./examples/placeholder_small.png "Recovery Image"
 [image4]: ./examples/placeholder_small.png "Normal Image"
 [image5]: ./examples/placeholder_small.png "Flipped Image"
