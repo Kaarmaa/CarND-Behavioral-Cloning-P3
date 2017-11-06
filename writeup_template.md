@@ -18,10 +18,10 @@ The goals / steps of this project are the following:
 
 [//]: # (Image References)
 
-[image1]: ./examples/placeholder.png "Model Visualization"
-[image2]: ./examples/placeholder.png "Grayscaling"
-[image3]: ./examples/placeholder_small.png "Recovery Image"
-[image4]: ./examples/placeholder_small.png "Recovery Image"
+[image1]: ./examples/placeholder.png "Placeholder"
+[image2]: ./examples/placeholder_small.png "Placeholder Small"
+[image3]: ./examples/Center_Basic.jpg "Basic Track - Center"
+[image4]: ./examples/Center_Advanced.png "Advanced Track - Center"
 [image5]: ./examples/placeholder_small.png "Recovery Image"
 [image6]: ./examples/placeholder_small.png "Normal Image"
 [image7]: ./examples/placeholder_small.png "Flipped Image"
