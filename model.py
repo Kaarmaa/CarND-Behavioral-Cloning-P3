@@ -1,52 +1,64 @@
 import csv
 import cv2
 import numpy as np
+import sklearn
+import math
+from random import shuffle
 
 from keras.models import Sequential
 from keras.layers import Flatten, Dense, Lambda, Cropping2D
 from keras.layers.convolutional import Convolution2D
+from sklearn.model_selection import train_test_split
 
-correction = [0.0,0.2,-0.2]
+correction = [0.0, 0.2, -0.2]
 lines = []
+batch_size = 128
 
-def getLines(filename):
+def getData(filename):
     with open(filename) as file:
         reader = csv.reader(file)
         for line in reader:
             lines.append(line)
-    yield
 
-def getData(filename):
+def generator(samples, batch_size=128):
+    num_samples = len(samples)
+    while 1: # Loop forever so the generator never terminates
+        shuffle(samples)
+        for offset in range(0, num_samples, batch_size):
+            batch_samples = samples[offset:offset+batch_size]
+
+            images = []
+            angles = []
+            for batch_sample in batch_samples:
+                center_angle = float(batch_sample[3])
+                for i in range(3):
+                    source_path = batch_sample[i]
+                    image = cv2.imread(source_path)
+                    images.append(image)
+                    angles.append(center_angle + correction[i])
+                    images.append(np.fliplr(image))
+                    angles.append((center_angle + correction[i]) * -1)
+
+            X_train = np.array(images)
+            y_train = np.array(angles)
+            yield sklearn.utils.shuffle(X_train, y_train)
+
+getData('./TrainingData/ORI/driving_log.csv')
+getData('./TrainingData/driving_log.csv')
+getData('./TrainingData_Track2/driving_log.csv')
+#getData('./TrainingData_Default/driving_log.csv')
 
 
-    images = []
-    measurements = []
-    for line in lines:
-        measurement = float(line[3])
-        for i in range(3):
-            source_path = line[i]
-            image = cv2.imread(source_path)
-            images.append(image)
-            measurements.append(measurement + correction[i])
-        for i in range(3):
-            source_path = line[i]
-            image = cv2.imread(source_path)
-            images.append(np.fliplr(image))
-            measurements.append((measurement + correction[i]) * -1)
+train_samples, validation_samples = train_test_split(lines, test_size=0.2)
 
-    return images, measurements
+# compile and train the model using the generator function
+train_generator = generator(train_samples, batch_size=batch_size)
+validation_generator = generator(validation_samples, batch_size=batch_size)
 
-
-images, measurements = getData('./TrainingData/driving_log.csv')
-#images, measurements = getData('./TrainingData_Track2/driving_log.csv')
-#images, measurements = getData('./TrainingData_Default/driving_log.csv')
-
-X_train = np.array(images)
-y_train = np.array(measurements)
-
+ch, row, col = 3, 160, 320  # Trimmed image format
 
 model = Sequential()
-model.add(Cropping2D(cropping=((70,25),(0,0)), input_shape=(160, 320, 3)))
+model.add(Cropping2D(cropping=((70, 25), (0, 0)), input_shape=(row, col, ch)))
 model.add(Lambda(lambda x: x / 255.0 - 0.5))
 model.add(Convolution2D(24,5,5, subsample=(2,2), activation="relu"))
 model.add(Convolution2D(36,5,5, subsample=(2,2), activation="relu"))
@@ -56,10 +68,16 @@ model.add(Convolution2D(64,3,3, activation="relu"))
 model.add(Flatten())
 model.add(Dense(100))
 model.add(Dense(50))
+model.add(Dense(10))
 model.add(Dense(1))
 
 model.compile(loss='mse', optimizer='adam')
-model.fit(X_train,y_train,validation_split=0.2, shuffle=True, nb_epoch=3, batch_size=512)
+#model.fit_generator(X_train,y_train,validation_split=0.2, shuffle=True, nb_epoch=5, batch_size=512)
+
+steps_per_epoch = math.ceil(len(train_samples)/batch_size)
+validation_steps = math.ceil(len(validation_samples)/batch_size)
+
+model.fit_generator(train_generator, steps_per_epoch=steps_per_epoch, validation_data=validation_generator, validation_steps=validation_steps, nb_epoch=3)
 
 model.save('model.h5')
 exit()
