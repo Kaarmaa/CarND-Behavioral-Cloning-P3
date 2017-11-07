@@ -20,9 +20,6 @@ The goals / steps of this project are the following:
 
 [image1]: ./examples/Center_Basic.jpg "Basic Track - Center"
 [image2]: ./examples/Center_Advanced.png "Advanced Track - Center"
-[image3]: ./examples/placeholder_small.png "Recovery Image"
-[image4]: ./examples/placeholder_small.png "Normal Image"
-[image5]: ./examples/placeholder_small.png "Flipped Image"
 
 ## Rubric Points
 ###Here I will consider the [rubric points](https://review.udacity.com/#!/rubrics/432/view) individually and describe how I addressed each point in my implementation.  
@@ -37,7 +34,8 @@ My project includes the following files:
 * drive.py for driving the car in autonomous mode
 * model.h5 containing a trained convolution neural network 
 * run1.mp4 containing a captured lap around the basic track
-* writeup_report.md or writeup_report.pdf summarizing the results
+* Resubmission.mp4 containing a much improved captured lap around the basic track (This is the accepted solution)
+* writeup_report.md summarizing the results
 
 ####2. Submission includes functional code
 Using the Udacity provided simulator and my drive.py file, the car can be driven autonomously around the track by executing 
@@ -63,7 +61,7 @@ The model includes:
 
 ####2. Attempts to reduce overfitting in the model
 
-The model contained dropout layers in order to reduce overfitting, but they were removed for degraded performance compared to the delivered model. This held true for both tracks available.   (model.py lines 21). 
+The model contains dropout layers in order to reduce overfitting (model.py lines 76 - 83). 
 
 The model was trained and validated on different data sets to ensure that the model was not overfitting (model.py lines 50-53). The model was tested by running it through the simulator and ensuring that the vehicle could stay on the track.
 
@@ -75,7 +73,7 @@ The model used an adam optimizer, so the learning rate was not tuned manually (m
 
 Training data was chosen to keep the vehicle driving on the road. I used a combination of:
  - Center lane driving (High Speed, Two Laps)
- - Recovery sscenarios from the left and right sides of the road
+ - Recovery scenarios from the left and right sides of the road
  - Normal speed lap on the advanced track
  - Slow speed lap for more samples on basic track
 
@@ -109,8 +107,14 @@ The final model architecture (model.py lines 65 - 77) consisted of a convolution
 - Convolutional 2D (1 x 33 x 64)
 - Flatten 
 - Fully Connected (100)
+    - Activation('elu')
+    - Dropout (0.1)
 - Fully Connected (50)
+    - Activation('elu')
+    - Dropout (0.1)
 - Fully Connected (10)
+    - Activation('elu')
+    - Dropout (0.1)
 - Fully Connected (1)
 
 ####3. Creation of the Training Set & Training Process
@@ -130,7 +134,11 @@ To augment the data set, I also flipped images and steering angle in order to va
 
 After the collection process, I had 17,500 samples, which after L/C/R and Flips, becomes 105,000 training images. 
 
-These images were then only preprocessed by cropping to the targeted area of interest, and fed into the normalization layer.
+These images were then only preprocessed by cropping to the targeted area of interest, and fed into the normalization 
+layer. I originally had a bug that trained the model with BGR images from opencv, but ran the drive.py script feeding
+in RGB images due to a different library. This caused a significant performance degradation. Once this was fixed, 
+the model performs at a much higher level. (I must credit the first code review in finding this issue. Thank you 
+so much!)
 
 I finally randomly shuffled the data set and put 20% of the data into a validation set. 
 

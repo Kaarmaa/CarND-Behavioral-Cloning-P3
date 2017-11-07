@@ -37,6 +37,7 @@ def generator(samples, batch_size=128):
                 for i in range(3):
                     source_path = batch_sample[i]
                     image = cv2.imread(source_path)
+                    image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
                     images.append(image)
                     angles.append(center_angle + correction[i])
                     images.append(np.fliplr(image))
